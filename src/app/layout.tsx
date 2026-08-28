@@ -13,14 +13,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NOVA | Интернет-магазин",
-  description: "Вещи с характером, выбранные с вниманием к деталям.",
+  title: "Warenladen | Kleidung und Accessoires in Essen",
+  description: "Sorgfaltig ausgewahlte Kleidung und Accessoires in warmen Farben.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="ru"
+      lang="de"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
