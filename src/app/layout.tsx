@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { CartProvider } from "@/components/cart/cart-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Warenladen | Kleidung und Accessoires in Essen",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  title: { default: "Warenladen | Kleidung und Accessoires in Essen", template: "%s | Warenladen" },
   description: "Sorgfaltig ausgewahlte Kleidung und Accessoires in warmen Farben.",
+  openGraph: { type: "website", locale: "de_DE", siteName: "Warenladen" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -23,7 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="de"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col"><CartProvider>{children}</CartProvider></body>
     </html>
   );
 }

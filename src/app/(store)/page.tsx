@@ -1,23 +1,15 @@
-import { categories, featuredProducts } from "@/lib/catalog/sample-data";
+import Link from "next/link";
 
-export default function Home() {
+import { StoreHeader } from "@/components/layout/store-header";
+import { ProductCard } from "@/components/product/product-card";
+import { getProducts } from "@/lib/catalog/queries";
+
+export default async function Home() {
+  const featuredProducts = (await getProducts()).slice(0, 3);
+
   return (
     <main>
-      <header className="site-header">
-        <a className="brand" href="#top" aria-label="Warenladen, zur Startseite">
-          WARENLADEN
-        </a>
-        <nav aria-label="Hauptnavigation">
-          {categories.map((category) => (
-            <a href="#catalog" key={category}>
-              {category}
-            </a>
-          ))}
-        </nav>
-        <a className="cart-link" href="#cart">
-          Warenkorb <span>0</span>
-        </a>
-      </header>
+      <StoreHeader />
 
       <section className="hero" id="top">
         <div className="hero-copy">
@@ -27,9 +19,9 @@ export default function Home() {
             Sorgfaltig ausgewahlte Kleidung und Accessoires in warmen Farben - fur
             Menschen, die Dinge mit Charakter lieben.
           </p>
-          <a className="primary-action" href="#catalog">
+          <Link className="primary-action" href="/products">
             Kollektion entdecken
-          </a>
+          </Link>
         </div>
         <div className="hero-art" aria-label="Auswahl warmer Accessoires" role="img">
           <div className="sun" />
@@ -43,20 +35,10 @@ export default function Home() {
         <div className="section-heading">
           <p className="eyebrow">Ausgewahlt fur dich</p>
           <h2 id="catalog-title">Stucke, die sich sofort richtig anfuhlen</h2>
-          <a href="#all-products">Alle Artikel</a>
+          <Link href="/products">Alle Artikel</Link>
         </div>
         <div className="product-grid">
-          {featuredProducts.map((product, index) => (
-            <article className="product-card" key={product.slug}>
-              <div className={`product-image ${product.tone}`}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <div className="product-shape" />
-              </div>
-              <p>{product.label}</p>
-              <h3>{product.name}</h3>
-              <strong>{product.price}</strong>
-            </article>
-          ))}
+          {featuredProducts.map((product, index) => <ProductCard product={product} index={index} key={product.slug} />)}
         </div>
       </section>
 
