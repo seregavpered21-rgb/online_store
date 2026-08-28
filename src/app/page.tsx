@@ -1,69 +1,73 @@
-import Image from "next/image";
+const categories = ["Новинки", "Одежда", "Аксессуары", "Подарки"];
+
+const products = [
+  { name: "Пальто из шерсти", price: "18 900 ₽", tone: "clay", label: "Новая коллекция" },
+  { name: "Кожаная сумка", price: "12 400 ₽", tone: "ochre", label: "Выбор недели" },
+  { name: "Шёлковый платок", price: "4 600 ₽", tone: "rose", label: "Лимитированный тираж" },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main>
+      <header className="site-header">
+        <a className="brand" href="#top" aria-label="NOVA, на главную">
+          NOVA
+        </a>
+        <nav aria-label="Основная навигация">
+          {categories.map((category) => (
+            <a href="#catalog" key={category}>
+              {category}
+            </a>
+          ))}
+        </nav>
+        <a className="cart-link" href="#cart">
+          Корзина <span>0</span>
+        </a>
+      </header>
+
+      <section className="hero" id="top">
+        <div className="hero-copy">
+          <p className="eyebrow">Вещи с характером</p>
+          <h1>Ваша новая любимая вещь уже здесь.</h1>
+          <p className="intro">
+            Небольшая коллекция одежды и деталей, которые хочется носить каждый день.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
+          <a className="primary-action" href="#catalog">
+            Смотреть коллекцию
           </a>
         </div>
-      </main>
-    </div>
+        <div className="hero-art" aria-label="Подборка аксессуаров" role="img">
+          <div className="sun" />
+          <div className="coat" />
+          <div className="bag" />
+          <p>01 / осень</p>
+        </div>
+      </section>
+
+      <section className="catalog" id="catalog" aria-labelledby="catalog-title">
+        <div className="section-heading">
+          <p className="eyebrow">Избранное</p>
+          <h2 id="catalog-title">Собрано с вниманием к каждой детали</h2>
+          <a href="#all-products">Все товары</a>
+        </div>
+        <div className="product-grid">
+          {products.map((product, index) => (
+            <article className="product-card" key={product.name}>
+              <div className={`product-image ${product.tone}`}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div className="product-shape" />
+              </div>
+              <p>{product.label}</p>
+              <h3>{product.name}</h3>
+              <strong>{product.price}</strong>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="promise" aria-label="О магазине">
+        <p>Честный выбор. Бережная упаковка. Доставка по всей России.</p>
+      </section>
+    </main>
   );
 }
