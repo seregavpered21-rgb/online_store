@@ -1,6 +1,6 @@
-import { and, asc, desc, eq, ilike, or } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, inArray, or } from "drizzle-orm";
 
-import { categories, productCategories, products, productVariants } from "@/db/schema";
+import { categories, productCategories, productImages, products, productVariants } from "@/db/schema";
 import { db } from "@/lib/db/client";
 
 const productTones: Record<string, string> = {
@@ -13,7 +13,7 @@ function formatPrice(priceInCents: number) {
   return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(priceInCents / 100);
 }
 
-function toCatalogProduct(product: typeof products.$inferSelect) {
+function toCatalogProduct(product: typeof products.$inferSelect, imageUrl?: string) {
   return {
     id: product.id,
     slug: product.slug,
@@ -23,7 +23,14 @@ function toCatalogProduct(product: typeof products.$inferSelect) {
     price: formatPrice(product.priceInCents),
     tone: productTones[product.slug] ?? "sand",
     label: product.isFeatured ? "Ausgewählt" : "Neu",
+    imageUrl,
   };
+}
+
+async function getImageUrls(productIds: string[]) {
+  if (!productIds.length) return new Map<string, string>();
+  const images = await db.select().from(productImages).where(inArray(productImages.productId, productIds)).orderBy(asc(productImages.position));
+  return new Map(images.filter((image) => !images.some((other) => other.productId === image.productId && other.position < image.position)).map((image) => [image.productId, image.url]));
 }
 
 export async function getNavigationCategories() {
@@ -41,7 +48,8 @@ export async function getProducts(filters: ProductFilters = {}) {
   const rows = filters.category
     ? await baseQuery.innerJoin(productCategories, eq(products.id, productCategories.productId)).innerJoin(categories, eq(productCategories.categoryId, categories.id)).where(and(...conditions, eq(categories.slug, filters.category))).orderBy(sort, asc(products.title))
     : await baseQuery.where(and(...conditions)).orderBy(sort, asc(products.title));
-  return rows.map(({ product }) => toCatalogProduct(product));
+  const imageUrls = await getImageUrls(rows.map(({ product }) => product.id));
+  return rows.map(({ product }) => toCatalogProduct(product, imageUrls.get(product.id)));
 }
 
 export async function getProductBySlug(slug: string) {
@@ -49,8 +57,9 @@ export async function getProductBySlug(slug: string) {
   if (!product) return undefined;
 
   const variants = await db.select().from(productVariants).where(eq(productVariants.productId, product.id)).orderBy(asc(productVariants.title));
+  const imageUrls = await getImageUrls([product.id]);
   return {
-    ...toCatalogProduct(product),
+    ...toCatalogProduct(product, imageUrls.get(product.id)),
     variants: variants.map((variant) => ({ id: variant.id, title: variant.title, color: variant.attributes.color ?? "", size: variant.attributes.size ?? "", inStock: variant.stockQuantity > 0 })),
     inStock: variants.some((variant) => variant.stockQuantity > 0),
   };
@@ -67,5 +76,6 @@ export async function getCategoryBySlug(slug: string) {
     .where(and(eq(productCategories.categoryId, category.id), eq(products.status, "active")))
     .orderBy(desc(products.isFeatured), asc(products.title));
 
-  return { ...category, products: rows.map(({ product }) => toCatalogProduct(product)) };
+  const imageUrls = await getImageUrls(rows.map(({ product }) => product.id));
+  return { ...category, products: rows.map(({ product }) => toCatalogProduct(product, imageUrls.get(product.id))) };
 }

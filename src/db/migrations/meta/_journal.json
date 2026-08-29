@@ -15,6 +15,20 @@
       "when": 1787941122237,
       "tag": "0001_outstanding_wong",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788037776948,
+      "tag": "0002_magenta_pixie",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788037807084,
+      "tag": "0003_public_bushwacker",
+      "breakpoints": true
     }
   ]
 }

@@ -1,7 +1,7 @@
-import { boolean, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const users = pgTable("user", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: varchar("id", { length: 64 }).primaryKey(),
   name: varchar("name", { length: 160 }).notNull(),
   email: varchar("email", { length: 320 }).notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
@@ -12,21 +12,22 @@ export const users = pgTable("user", {
 });
 
 export const sessions = pgTable("session", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: varchar("id", { length: 64 }).primaryKey(),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   token: varchar("token", { length: 255 }).notNull().unique(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   ipAddress: varchar("ip_address", { length: 64 }),
   userAgent: text("user_agent"),
-  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: varchar("user_id", { length: 64 }).notNull().references(() => users.id, { onDelete: "cascade" }),
 });
 
 export const accounts = pgTable("account", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: varchar("id", { length: 64 }).primaryKey(),
   accountId: varchar("account_id", { length: 255 }).notNull(),
   providerId: varchar("provider_id", { length: 255 }).notNull(),
-  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  issuer: varchar("issuer", { length: 255 }),
+  userId: varchar("user_id", { length: 64 }).notNull().references(() => users.id, { onDelete: "cascade" }),
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
@@ -38,7 +39,7 @@ export const accounts = pgTable("account", {
 });
 
 export const verifications = pgTable("verification", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: varchar("id", { length: 64 }).primaryKey(),
   identifier: varchar("identifier", { length: 320 }).notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),

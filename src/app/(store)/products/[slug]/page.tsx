@@ -27,7 +27,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <StoreHeader />
       <ProductSchema product={product} />
       <section className="product-detail">
-        <div className={`product-detail-image ${product.tone}`}><div className="product-shape" /></div>
+        <div className={`product-detail-image ${product.tone}`}>{product.imageUrl ? <img src={product.imageUrl} alt={product.name} /> : <div className="product-shape" />}</div>
         <div className="product-detail-copy">
           <p className="eyebrow">{product.label}</p>
           <h1>{product.name}</h1>
