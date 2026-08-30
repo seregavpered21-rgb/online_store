@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 import { orders } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db/client";
+import { sendOrderStatusEmail } from "@/lib/email/orders";
 
 type OrderStatus = "new" | "confirmed" | "fulfilled" | "cancelled";
 type RouteContext = { params: Promise<{ id: string }> };
@@ -21,6 +22,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
   if (!order) return NextResponse.json({ error: "Bestellung nicht gefunden." }, { status: 404 });
   if (!transitions[order.status].includes(body.status)) return NextResponse.json({ error: "Dieser Statuswechsel ist nicht erlaubt." }, { status: 409 });
   await db.update(orders).set({ status: body.status }).where(eq(orders.id, id));
+  void sendOrderStatusEmail({ email: order.email, orderNumber: order.orderNumber, totalInCents: order.totalInCents, status: body.status as "confirmed" | "fulfilled" | "cancelled" }).catch(console.error);
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${id}`);
   return NextResponse.json({ status: body.status });

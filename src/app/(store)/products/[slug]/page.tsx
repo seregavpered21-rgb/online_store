@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -27,7 +28,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <StoreHeader />
       <ProductSchema product={product} />
       <section className="product-detail">
-        <div className={`product-detail-image ${product.tone}`}>{product.imageUrl ? <img src={product.imageUrl} alt={product.name} /> : <div className="product-shape" />}</div>
+        <div className={`product-detail-image ${product.tone}`}>{product.imageUrl ? <Image src={product.imageUrl} alt={product.name} fill sizes="(max-width: 700px) 100vw, 50vw" /> : <div className="product-shape" />}</div>
         <div className="product-detail-copy">
           <p className="eyebrow">{product.label}</p>
           <h1>{product.name}</h1>

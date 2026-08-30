@@ -1,0 +1,3 @@
+import { LegalPage } from "@/components/legal/legal-page";
+
+export default function ImpressumPage() { return <LegalPage title="Impressum" intro="Angaben gemäß § 5 TMG. Bitte vor dem Verkaufsstart mit den tatsächlichen Unternehmensdaten ergänzen." sections={[{ title: "Anbieter", text: "Warenladen\n[Vor- und Nachname oder Firmenname]\n[Straße und Hausnummer]\n[PLZ und Ort]\nDeutschland" }, { title: "Kontakt", text: "E-Mail: [E-Mail-Adresse]\nTelefon: [Telefonnummer]" }, { title: "Verantwortlich für den Inhalt", text: "[Vor- und Nachname]\n[Anschrift wie oben]" }, { title: "Hinweis", text: "Dieses Impressum ist ein Platzhalter und keine Rechtsberatung. Angaben zu Rechtsform, Vertretung, Register, Umsatzsteuer-ID und Aufsicht sind bei Bedarf zu ergänzen." }]} />; }

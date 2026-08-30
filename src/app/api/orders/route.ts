@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { customers } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db/client";
+import { sendOrderConfirmation } from "@/lib/email/orders";
 
 type OrderRequest = { name?: string; email?: string; phone?: string; delivery?: "essen" | "post"; address?: string; items?: { variantId: string; quantity: number }[] };
 
@@ -49,16 +50,20 @@ export async function POST(request: Request) {
       FROM requested JOIN product_variants variant ON variant.id = requested.variant_id
       WHERE (SELECT COUNT(*) FROM decremented) = (SELECT COUNT(*) FROM requested)
       GROUP BY ${orderId}
-      RETURNING id
+      RETURNING id, total_in_cents
     )
-    INSERT INTO order_items (order_id, variant_id, product_title, variant_title, unit_price_in_cents, quantity)
-    SELECT created_order.id, variant.id, product.title, variant.title, variant.price_in_cents, requested.quantity
-    FROM created_order JOIN requested ON true
-    JOIN product_variants variant ON variant.id = requested.variant_id
-    JOIN products product ON product.id = variant.product_id
-    RETURNING order_id;
+    , created_items AS (
+      INSERT INTO order_items (order_id, variant_id, product_title, variant_title, unit_price_in_cents, quantity)
+      SELECT created_order.id, variant.id, product.title, variant.title, variant.price_in_cents, requested.quantity
+      FROM created_order JOIN requested ON true
+      JOIN product_variants variant ON variant.id = requested.variant_id
+      JOIN products product ON product.id = variant.product_id
+      RETURNING order_id
+    )
+    SELECT id, total_in_cents FROM created_order;
   `);
   if (!result.rows.length) return NextResponse.json({ error: "Ein Artikel ist nicht mehr in der gewünschten Menge verfügbar." }, { status: 409 });
 
+  void sendOrderConfirmation({ email, orderNumber, totalInCents: Number(result.rows[0]?.total_in_cents ?? 0) }).catch(console.error);
   return NextResponse.json({ orderNumber });
 }

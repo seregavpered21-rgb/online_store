@@ -1,0 +1,3 @@
+import { LegalPage } from "@/components/legal/legal-page";
+
+export default function VersandUndZahlungPage() { return <LegalPage title="Versand & Zahlung" intro="Die konkreten Kosten und Lieferzeiten bitte vor Verkaufsstart verbindlich ergänzen." sections={[{ title: "Lieferung", text: "Wir bieten Abholung sowie Lieferung im Raum Essen nach Vereinbarung an. Zusätzlich versenden wir innerhalb Deutschlands per Post." }, { title: "Lieferzeit und Kosten", text: "Die voraussichtliche Lieferzeit und Versandkosten werden vor Abschluss der Bestellung mitgeteilt. [Verbindliche Versandkosten und Lieferfristen ergänzen.]" }, { title: "Zahlung", text: "Aktuell erfolgt die Zahlung bei Erhalt der Ware. Weitere Zahlungsarten werden ergänzt, sobald sie verfügbar sind." }]} />; }
