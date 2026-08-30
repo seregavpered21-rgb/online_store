@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { asc, desc } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -21,13 +22,13 @@ export default async function AdminPage() {
     <main className="admin-page">
       <header className="admin-header">
         <div><p className="eyebrow">Warenladen Verwaltung</p><h1>Katalog</h1></div>
-        <a className="back-link" href="/">Zum Shop</a>
+        <Link className="back-link" href="/">Zum Shop</Link>
       </header>
       <section className="admin-layout">
         <AdminProductForm categories={categoryList.map((category) => ({ id: category.id, title: category.title }))} />
         <section className="admin-products" aria-label="Produkte">
           <h2>Produkte</h2>
-          {catalog.length ? <div className="admin-table">{catalog.map((product) => <article key={product.id}><div><strong>{product.title}</strong><span>/{product.slug}</span></div><span>{new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(product.priceInCents / 100)}</span><span className={`status status-${product.status}`}>{product.status}</span></article>)}</div> : <p>Noch keine Produkte angelegt.</p>}
+          {catalog.length ? <div className="admin-table">{catalog.map((product) => <article key={product.id}><div><strong>{product.title}</strong><span>/{product.slug}</span></div><span>{new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(product.priceInCents / 100)}</span><span className={`status status-${product.status}`}>{product.status}</span><Link className="text-action" href={`/admin/products/${product.id}`}>Bearbeiten</Link></article>)}</div> : <p>Noch keine Produkte angelegt.</p>}
         </section>
       </section>
     </main>
