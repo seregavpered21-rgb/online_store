@@ -29,6 +29,13 @@
       "when": 1788037807084,
       "tag": "0003_public_bushwacker",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1788095041568,
+      "tag": "0004_shallow_zaladane",
+      "breakpoints": true
     }
   ]
 }

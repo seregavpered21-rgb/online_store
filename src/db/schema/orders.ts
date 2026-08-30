@@ -15,6 +15,7 @@ export const orders = pgTable("orders", {
   paymentMethod: paymentMethod("payment_method").default("cash_on_delivery").notNull(),
   totalInCents: integer("total_in_cents").notNull(),
   deliveryAddress: text("delivery_address").notNull(),
+  adminNote: text("admin_note"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
