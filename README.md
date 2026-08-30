@@ -215,3 +215,5 @@ npm run db:migrate
 - Правовая проверка Impressum, Datenschutz, Widerruf и условий продажи.
 
 Подробный приоритетный backlog находится в [TODO.md](TODO.md).
+
+Для ежедневной работы с товарами и заказами используйте [инструкцию продавца](docs/SELLER_GUIDE.md).
