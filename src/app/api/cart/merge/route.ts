@@ -10,7 +10,7 @@ type GuestCartItem = { variantId: string; quantity: number };
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) return NextResponse.json({ merged: false }, { status: 401 });
+  if (!session) return new NextResponse(null, { status: 204 });
 
   const body = await request.json() as { items?: GuestCartItem[] };
   const items = (body.items ?? []).filter((item) => typeof item.variantId === "string" && Number.isInteger(item.quantity) && item.quantity > 0);

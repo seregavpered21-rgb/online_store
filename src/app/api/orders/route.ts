@@ -6,25 +6,22 @@ import { customers } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db/client";
 import { sendOrderConfirmation } from "@/lib/email/orders";
-
-type OrderRequest = { name?: string; email?: string; phone?: string; delivery?: "essen" | "post"; address?: string; items?: { variantId: string; quantity: number }[] };
+import { consolidateOrderItems, createOrderNumber, getValidOrderItems, validateOrderRequest, type OrderRequestInput } from "@/lib/orders/validation";
 
 export async function POST(request: Request) {
-  const body = await request.json() as OrderRequest;
-  const items = body.items?.filter((item) => typeof item.variantId === "string" && Number.isInteger(item.quantity) && item.quantity > 0) ?? [];
-  if (!body.name?.trim() || !body.email?.includes("@") || !body.phone?.trim() || !body.delivery || !items.length) return NextResponse.json({ error: "Bitte fülle alle Pflichtfelder aus." }, { status: 400 });
-  if (body.delivery === "post" && !body.address?.trim()) return NextResponse.json({ error: "Bitte gib deine Lieferadresse an." }, { status: 400 });
+  const body = await request.json() as OrderRequestInput;
+  const items = getValidOrderItems(body.items);
+  const validationError = validateOrderRequest(body, items);
+  if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
   const session = await auth.api.getSession({ headers: await headers() });
-  const email = session?.user.email ?? body.email.trim();
-  const quantities = new Map<string, number>();
-  for (const item of items) quantities.set(item.variantId, (quantities.get(item.variantId) ?? 0) + item.quantity);
-  const requestedItems = [...quantities].map(([variantId, quantity]) => ({ variantId, quantity }));
-  const orderNumber = `WL-${Date.now().toString().slice(-8)}`;
-  const deliveryAddress = body.delivery === "essen" ? "Abholung oder Lieferung in Essen nach Vereinbarung" : body.address!.trim();
+  const email = session?.user.email ?? body.email as string;
+  const requestedItems = consolidateOrderItems(items);
+  const orderNumber = createOrderNumber();
+  const deliveryAddress = body.delivery === "essen" ? "Abholung oder Lieferung in Essen nach Vereinbarung" : body.address as string;
   let customerId: string | null = null;
   if (session) {
-    const [customer] = await db.insert(customers).values({ email, firstName: body.name.trim(), phone: body.phone.trim() }).onConflictDoUpdate({ target: customers.email, set: { firstName: body.name.trim(), phone: body.phone.trim() } }).returning({ id: customers.id });
+    const [customer] = await db.insert(customers).values({ email, firstName: body.name as string, phone: body.phone as string }).onConflictDoUpdate({ target: customers.email, set: { firstName: body.name as string, phone: body.phone as string } }).returning({ id: customers.id });
     customerId = customer?.id ?? null;
   }
   const values = sql.join(requestedItems.map((item) => sql`(${item.variantId}::uuid, ${item.quantity}::integer)`), sql`, `);

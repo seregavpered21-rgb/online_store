@@ -132,6 +132,7 @@ npm run dev
 npm run dev          # локальный сервер
 npm run build        # production-сборка
 npm run lint         # ESLint
+npm test             # unit-тесты бизнес-логики
 npm run db:generate  # создать миграцию после изменения schema
 npm run db:migrate   # применить миграции к DATABASE_URL
 npm run db:seed      # заполнить пустую базу демо-данными
@@ -141,6 +142,7 @@ npm run db:seed      # заполнить пустую базу демо-дан�
 
 ```powershell
 npm run lint
+npm test
 npm run build
 git status
 ```
