@@ -22,7 +22,7 @@ export default async function AdminPage() {
     <main className="admin-page">
       <header className="admin-header">
         <div><p className="eyebrow">Warenladen Verwaltung</p><h1>Katalog</h1></div>
-        <Link className="back-link" href="/">Zum Shop</Link>
+        <div className="admin-header-actions"><Link className="back-link" href="/admin/orders">Bestellungen</Link><Link className="back-link" href="/">Zum Shop</Link></div>
       </header>
       <section className="admin-layout">
         <AdminProductForm categories={categoryList.map((category) => ({ id: category.id, title: category.title }))} />
